@@ -1,0 +1,32 @@
+name: CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake lcov gcovr
+        
+    - name: Configure
+      run: |
+        mkdir -p build && cd build
+        cmake .. -DBUILD_TESTS=ON
+        
+    - name: Build
+      run: |
+        cd build
+        cmake --build . --config Release
+        
+    - name: Run Tests
+      run: |
+        cd build
+        ctest --output-on-failure

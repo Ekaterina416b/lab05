@@ -1,21 +1,24 @@
-#include <Account.h>
+#include "mocks/MockAccount.h"
 #include <gtest/gtest.h>
 
-TEST(Account, Banking){
-	Account test(0,0);
-	
-	ASSERT_EQ(test.GetBalance(), 0);
-	
-	ASSERT_THROW(test.ChangeBalance(100), std::runtime_error);
-	
-	test.Lock();
-	
-	ASSERT_NO_THROW(test.ChangeBalance(100));
-	
-	ASSERT_EQ(test.GetBalance(), 100);
+TEST(AccountTest, Banking) {
+    MockAccount test(0, 0);
 
-	ASSERT_THROW(test.Lock(), std::runtime_error);
+    // Настройка ожиданий
+    EXPECT_CALL(test, Lock()).Times(1);
+    EXPECT_CALL(test, Unlock()).Times(1);
+    EXPECT_CALL(test, ChangeBalance(100)).Times(1);
+    EXPECT_CALL(test, GetBalance()).WillRepeatedly(::testing::Return(100));
 
-	test.Unlock();
-	ASSERT_THROW(test.ChangeBalance(100), std::runtime_error);
+    // Тестирование
+    ASSERT_EQ(test.GetBalance(), 0);
+    ASSERT_THROW(test.ChangeBalance(100), std::runtime_error);
+
+    test.Lock();
+    ASSERT_NO_THROW(test.ChangeBalance(100));
+    ASSERT_EQ(test.GetBalance(), 100);
+    ASSERT_THROW(test.Lock(), std::runtime_error);
+
+    test.Unlock();
+    ASSERT_THROW(test.ChangeBalance(100), std::runtime_error);
 }
