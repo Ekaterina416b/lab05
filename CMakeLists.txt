@@ -9,7 +9,7 @@ add_library(banking
     banking/Account.cpp
     banking/Transaction.cpp
 )
-target_include_directories(banking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/banking)
+target_include_directories(banking PUBLIC banking)
 
 # Тесты
 option(BUILD_TESTS "Build tests" ON)
@@ -17,30 +17,17 @@ option(BUILD_TESTS "Build tests" ON)
 if(BUILD_TESTS)
     enable_testing()
     
-    # Подключаем GoogleTest
-    add_subdirectory(third-party/gtest)
+    # Подключение GoogleTest (исправленная строка)
+    add_subdirectory(third-party/gtest EXCLUDE_FROM_ALL)  # Используем существующий путь
     
-    # Моки
-    add_library(banking_mocks
-        tests/mocks/MockAccount.h
-        tests/mocks/MockTransaction.h
-    )
-    target_link_libraries(banking_mocks GTest::GTest)
-    target_include_directories(banking_mocks PUBLIC 
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/mocks
-    )
+    # Моки как INTERFACE-библиотека
+    add_library(banking_mocks INTERFACE)
+    target_include_directories(banking_mocks INTERFACE tests/mocks)
+    target_link_libraries(banking_mocks INTERFACE GTest::gtest)
 
-    # Тестовый исполняемый файл
+    # Тесты
     add_executable(banking_tests
         tests/test_Account.cpp
         tests/test_Transaction.cpp
     )
-    target_link_libraries(banking_tests
-        banking
-        banking_mocks
-        GTest::GTest
-        GTest::Main
-    )
-    
-    add_test(NAME banking_tests COMMAND banking_tests)
-endif()
+   
