@@ -1,34 +1,27 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.29)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTS "Build tests" OFF)
 
-enable_testing()
+if(BUILD_TESTS)                   
+  add_compile_options(--coverage) 
+endif()
 
-project(banking)
+project (banking)
 
-set(Sources
-    banking/Account.cpp
-    banking/Transaction.cpp
-)
-set(Headers
-    banking/Account.h
-    banking/Transaction.h
-)
+add_library(banking STATIC ${CMAKE_CURRENT_SOURCE_DIR}/banking/Transaction.cpp ${CMAKE_CURRENT_SOURCE_DIR}/banking/Account.cpp)
+target_include_directories(banking PUBLIC
+${CMAKE_CURRENT_SOURCE_DIR}/banking )
 
-add_library(banking STATIC ${Sources} ${Headers})
-target_include_directories(banking PUBLIC banking)
+target_link_libraries(banking gcov)
 
 if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(third-party/gtest)
-    add_executable(my_test tests/tests.cpp)
-    target_link_libraries(my_test
-        gtest_main
-        gmock_main
-        banking
-    )
-    add_test(NAME my_test COMMAND my_test)
+  enable_testing()
+  add_subdirectory(third-party/gtest)
+  file(GLOB BANKING_TEST_SOURCES tests/*.cpp)
+  add_executable(check ${BANKING_TEST_SOURCES})
+  target_link_libraries(check banking gtest_main)
+  add_test(NAME check COMMAND check)
 endif()

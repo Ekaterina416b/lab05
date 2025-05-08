@@ -34,13 +34,18 @@ bool Transaction::Make(Account& from, Account& to, int sum) {
   Guard guard_from(from);
   Guard guard_to(to);
 
+  // 1. Попытка списания средств с отправителя (с учетом комиссии)
+  if (!Debit(from, sum + fee_)) {
+    return false; // Недостаточно средств на счете from, отмена транзакции
+  }
+
+  // 2. Если списание успешно, зачисление на счет получателя
   Credit(to, sum);
 
-  bool success = Debit(to, sum + fee_);
-  if (!success) to.ChangeBalance(-sum);
-
+  // 3. Сохранение в БД (после успешного списания и зачисления)
   SaveToDataBase(from, to, sum);
-  return success;
+
+  return true; // Транзакция успешна
 }
 
 void Transaction::Credit(Account& accout, int sum) {
@@ -50,7 +55,7 @@ void Transaction::Credit(Account& accout, int sum) {
 
 bool Transaction::Debit(Account& accout, int sum) {
   assert(sum > 0);
-  if (accout.GetBalance() > sum) {
+  if (accout.GetBalance() >= sum) { // Исправлено: >=
     accout.ChangeBalance(-sum);
     return true;
   }
