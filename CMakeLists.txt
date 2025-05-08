@@ -18,7 +18,7 @@ if(BUILD_TESTS)
     enable_testing()
     
     # Подключаем GoogleTest
-    add_subdirectory(third-party/googletest)
+    add_subdirectory(third-party/gtest)
     
     # Моки
     add_library(banking_mocks
