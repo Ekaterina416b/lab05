@@ -1,6 +1,5 @@
 #include "mocks/MockAccount.h"
-#include <gtest/gtest.h>
-
+#include "../../third-party/gtest/googletest/include/gtest/gtest.h"
 TEST(AccountTest, Banking) {
     MockAccount test(0, 0);
 
