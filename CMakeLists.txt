@@ -43,9 +43,12 @@ if(BUILD_TESTS)
         tests/test_Account.cpp
         tests/test_Transaction.cpp
     )
-    
+
     target_link_libraries(banking_tests PRIVATE
-        banking
-        banking_mocks
+    banking
+    banking_mocks
+    gtest
+    gmock
+    gtest_main
     )
 endif()
