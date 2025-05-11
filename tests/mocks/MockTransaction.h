@@ -1,6 +1,6 @@
 #pragma once
-#include "../banking/Transaction.h"
-#include <gmock/gmock.h>
+#include "../../banking/Transaction.h"  // Правильный относительный путь
+#include "../../third-party/gtest/googlemock/include/gmock/gmock.h"
 
 class MockTransaction : public Transaction {
 public:
