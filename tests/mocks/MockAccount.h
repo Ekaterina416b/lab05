@@ -10,5 +10,5 @@ public:
     MOCK_METHOD(void, ChangeBalance, (int amount), (override));
     MOCK_METHOD(void, Lock, (), (override));
     MOCK_METHOD(void, Unlock, (), (override));
-    MOCK_METHOD(int, id, (), (const, override));
+    MOCK_METHOD(int, id, (), (const));
 };
